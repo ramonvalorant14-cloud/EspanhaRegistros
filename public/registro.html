@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registro — ESPANHA</title>
+  <style>
+    :root{
+      --red:#b30b0b;
+      --dark:#0f0f12;
+      --glass: rgba(255,255,255,0.04);
+      --accent: #ffffff;
+    }
+    *{box-sizing:border-box;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:linear-gradient(180deg,#0b0b0b 0%, #121212 100%);
+      color:var(--accent);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    .card{
+      width:100%;
+      max-width:760px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      padding:22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    .header{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .logo{
+      width:72px;height:72px;border-radius:8px;overflow:hidden;border:2px solid rgba(255,255,255,0.05);
+      flex:0 0 72px;
+    }
+    .logo img{width:100%;height:100%;object-fit:cover;}
+    .title{
+      font-size:20px;
+      font-weight:700;
+      color:var(--red);
+    }
+    .subtitle{
+      font-size:13px;
+      color:rgba(255,255,255,0.65);
+      margin-top:4px;
+    }
+    form{display:grid;gap:12px}
+    label{font-size:12px;color:rgba(255,255,255,0.75);display:block;margin-bottom:6px}
+    input[type="text"], input[type="tel"]{
+      width:100%;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.04);
+      background:var(--glass);
+      color:var(--accent);
+      outline:none;
+      font-size:14px;
+    }
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .actions{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:6px}
+    button{
+      padding:10px 14px;border-radius:10px;border:none;font-weight:700;
+      cursor:pointer;
+    }
+    .btn-send{background:var(--red);color:white}
+    .btn-cancel{background:transparent;border:1px solid rgba(255,255,255,0.06);color:rgba(255,255,255,0.85)}
+    .notice{font-size:13px;color:rgba(255,255,255,0.6);margin-top:8px}
+    footer{margin-top:14px;font-size:12px;color:rgba(255,255,255,0.45);text-align:center}
+    .banner{width:100%;height:130px;border-radius:8px;overflow:hidden;margin-bottom:12px}
+    .banner img{width:100%;height:100%;object-fit:cover;filter:grayscale(0) contrast(1.05)}
+    .success{display:none;padding:20px;border-radius:8px;background:rgba(0,0,0,0.5);color:var(--accent);text-align:center}
+    .error{display:none;color:#ff6b6b;font-weight:600}
+  </style>
+</head>
+<body>
+  <div class="card" id="app">
+    <div class="banner"><img src="assets/banner.png"></div>
+    <div class="header">
+      <div class="logo"><img src="assets/logo.png"></div>
+      <div>
+        <div class="title">Espanha - Pedir Set</div>
+        <div class="subtitle">Preencha os dados abaixo com atenção. Estes serão enviados para análise.</div>
+      </div>
+    </div>
+
+    <form id="registroForm">
+      <div>
+        <label for="nome">Nome na cidade</label>
+        <input id="nome" name="nome" type="text" placeholder="Ex: Cleitin Fuba" required />
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="idCidade">ID na cidade</label>
+          <input id="idCidade" name="idCidade" type="text" placeholder="Ex: 12345" required />
+        </div>
+        <div>
+          <label for="telefone">Telefone</label>
+          <input id="telefone" name="telefone" type="tel" placeholder="Ex: 000-000" required />
+        </div>
+      </div>
+
+      <div>
+        <label for="recrutador">Quem te recrutou?</label>
+        <input id="recrutador" name="recrutador" type="text" placeholder="Ex: Cleitin Fuba" required />
+      </div>
+
+      <!-- hidden fields preenchidos via query string -->
+      <input type="hidden" id="userId" name="userId" />
+      <input type="hidden" id="token" name="token" />
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" onclick="onCancel()">Cancelar</button>
+        <button type="submit" class="btn-send">Enviar Registro</button>
+      </div>
+
+      <div class="notice">Ao enviar, sua solicitação será direcionada à equipe de recrutamento para análise.</div>
+      <div class="error" id="err"></div>
+      <div class="success" id="ok">Registro enviado! Aguarde a análise no Discord.</div>
+    </form>
+
+    <footer>ESPANHA • Sistema de Registro</footer>
+  </div>
+
+  <script>
+    // Lê query string e coloca em hidden inputs
+    function qs(key) {
+      const params = new URLSearchParams(location.search);
+      return params.get(key);
+    }
+    document.getElementById('userId').value = qs('userId') || '';
+    document.getElementById('token').value = qs('token') || '';
+
+    async function onCancel(){
+      window.close?.() || history.back();
+    }
+
+    document.getElementById('registroForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        userId: document.getElementById('userId').value,
+        token: document.getElementById('token').value,
+        nome: document.getElementById('nome').value.trim(),
+        idCidade: document.getElementById('idCidade').value.trim(),
+        telefone: document.getElementById('telefone').value.trim(),
+        recrutador: document.getElementById('recrutador').value.trim()
+      };
+
+      const errEl = document.getElementById('err');
+      const okEl = document.getElementById('ok');
+      errEl.style.display = 'none';
+      okEl.style.display = 'none';
+
+      if(!data.userId || !data.token){
+        errEl.textContent = 'Link inválido ou expirado.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      try {
+        const resp = await fetch('/api/registro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const json = await resp.json();
+        if(resp.ok){
+          okEl.textContent = json.message || 'Registro enviado com sucesso!';
+          okEl.style.display = 'block';
+          // opcional: fechar após 2s
+          setTimeout(()=> { try{ window.close(); }catch{} }, 1600);
+        } else {
+          errEl.textContent = json.error || 'Erro ao enviar registro.';
+          errEl.style.display = 'block';
+        }
+      } catch (error){
+        errEl.textContent = 'Erro de conexão com o servidor.';
+        errEl.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
