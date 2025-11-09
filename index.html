@@ -145,6 +145,7 @@
 
     document.getElementById('registroForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+
       const data = {
         userId: document.getElementById('userId').value,
         token: document.getElementById('token').value,
@@ -166,7 +167,10 @@
       }
 
       try {
-        const resp = await fetch('/api/registro', {
+        // ⚠️ TROQUE AQUI PARA O SEU BACKEND ONLINE
+        const backendUrl = 'https://SEU-BACKEND-ONLINE/api/registro';
+
+        const resp = await fetch(backendUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
@@ -176,13 +180,13 @@
         if(resp.ok){
           okEl.textContent = json.message || 'Registro enviado com sucesso!';
           okEl.style.display = 'block';
-          // opcional: fechar após 2s
           setTimeout(()=> { try{ window.close(); }catch{} }, 1600);
         } else {
           errEl.textContent = json.error || 'Erro ao enviar registro.';
           errEl.style.display = 'block';
         }
       } catch (error){
+        console.error(error);
         errEl.textContent = 'Erro de conexão com o servidor.';
         errEl.style.display = 'block';
       }
